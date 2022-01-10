@@ -1,8 +1,3 @@
-# Flaber (Fast Labeler) is a python tool that reads conn.log bro/zeek files of any size and anlyze its columns line by line and inserts new 
-# columns with malware and network analysis information with the best performance possible. 
-# The labels that are attached to the resulting labeled conn.log comes from an external configuration file that can grow to improve 
-# the nework and malware analysis.
-
 import csv
 import json
 import sys
