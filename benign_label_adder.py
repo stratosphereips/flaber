@@ -3,42 +3,58 @@ import time
 import json
 from datetime import datetime
 
-connlog_path = sys.argv[1] 
-result_path = str(connlog_path) + ".labeled" 
-logfile = "benign_label_adder.log"
+usage="Usage: python3 benign_label_adder.py conn.log"
 
-print("Bro Column adder logs at: " + str(logfile))
-
-logfile_logical = open(logfile,"w+")
-
-datetime = datetime.now().strftime("%d/%m/%y %H:%M:%S")
-logfile_logical.write("Bro Column adder started at:" + str(datetime) + "\n")
+# Label to be added to the conn.log file
 label = "benign"
 
-with open(connlog_path, 'r') as istr:
-    with open(result_path, 'w') as ostr:
-        cnt = 1
-        for line in istr:
-            if cnt == 7:
-                line = line.rstrip('\n') + '   label' + '   detailed-label'
-                print(line, file=ostr)
-            if cnt == 8:
-                line = line.rstrip('\n') + '   string' + '   string'
-                print(line, file=ostr)
-            elif(cnt > 8):
-                line = line.rstrip('\n')
-                try:
-                    line = line.rstrip('\n') + '   ' + str(label) + '   -'
-                    print(line, file=ostr)
-                except Exception as e:
-                    msg = "Exception {} at line {} ".format(str(e))
-                    msg = msg.rstrip('\n')
-                    print(str(msg))
-                    logfile_logical.write(str(msg))
-                    pass
-            elif(cnt < 7):
-                line = line.rstrip('\n')
-                print(line, file=ostr)
-            cnt += 1
-            if (cnt % 100000) == 0:
-                print("Analyzing {} flows".format(str(cnt)))
+# Receive as input the conn.log to label
+connlog_file = sys.argv[1] 
+if (len(sys.argv) < 2):
+    print(usage)
+    sys.exit(1)
+
+# Write the labeled conn.log as a new file conn.log.labeled
+labeled_connlog_file = str(connlog_file) + ".labeled" 
+
+
+try: 
+    with open(connlog_file, 'r') as inputconnlog:
+        with open(labeled_connlog_file, 'w') as outputconnlog:
+            # The line_number counter helps knowing where to add headers and where to add labels, and which lines to ignore
+            line_number = 1
+
+            # We process the conn.log file line by line to add labels
+            for line in inputconnlog:
+
+                # Ignore the first 6 lines of Zeek header
+                if(line_number < 7):
+                    line = line.rstrip('\n')
+                    print(line, file=outputconnlog)
+
+                # Header line number 7 contains the column names
+                elif line_number == 7:
+                    line = line.rstrip('\n') + '   label' + '   detailed-label'
+                    print(line, file=outputconnlog)
+
+                # Header line number 8 contains the column data type
+                elif line_number == 8:
+                    line = line.rstrip('\n') + '   string' + '   string'
+                    print(line, file=outputconnlog)
+
+                # All the rest are network flows
+                elif(line_number > 8):
+                    line = line.rstrip('\n')
+                    try:
+                        line = line.rstrip('\n') + '   ' + str(label) + '   -'
+                        print(line, file=outputconnlog)
+                    except Exception as e:
+                        print(e)
+                        pass
+                # Increase line counter to move to the next line in the input log
+                line_number += 1
+                if (line_number % 100000) == 0:
+                    print("Analyzing {} flows".format(str(line_number)))
+except Exception as e:
+    print(e)
+    sys.exit(1)
