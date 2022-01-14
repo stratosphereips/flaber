@@ -6,13 +6,13 @@ import os
 from parsezeeklogs import ParseZeekLogs
 from datetime import datetime
 
-helptext="Usage: conn.log file and labels.csv file"
+helptext="Usage: python3 flaber.py conn.log labels.csv"
 logfile = "flaber.log"
 
 if (len(sys.argv) < 2):
     print(helptext)
 
-print("Flaber logs at: " + str(logfile))
+print("Flaber logs at: " + logfile)
 
 def labeler(log_record, labelsjson):
     # Parsing flows to json
@@ -140,7 +140,7 @@ except Exception as e:
         
 
 try:
-    result_file = "out.csv"
+    result_file = "out.json"
     
     labelsjson = json.dumps( [ row for row in reader ] )  
     conn_file_lines = os.popen('wc -l ' + str(connlog_path) + ' | cut -d" " -f1').read()
@@ -165,6 +165,7 @@ try:
                     print("Analyzing {} flows ".format(count))
     
     print("Labeled: {} of {} flows".format(count, str(conn_file_lines)))
+    print("Labeled flow written to {}".format(result_file))
 
 except Exception as e:
     print("Exception opening {} file: {}".format(result_file, str(e)))
