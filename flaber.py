@@ -130,7 +130,7 @@ logic_logfile.write("Flaber started at:" + str(datetime) + "\n")
 
 try:
     # Open the CSV  
-    f = open(labelsfile_path, 'rU' )  
+    f = open(labelsfile_path, 'r' )
     # Change each fieldname to the appropriate field name. I know, so difficult.  
     reader = csv.DictReader(f)  
     # Parse the CSV into JSON  
