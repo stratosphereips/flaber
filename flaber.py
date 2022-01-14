@@ -165,7 +165,7 @@ try:
                     print("Analyzing {} flows ".format(count))
     
     print("Labeled: {} of {} flows".format(count, str(conn_file_lines)))
-    print("Labeled flow written to {}".format(result_file))
+    print("Labeled flows written to: {}".format(result_file))
 
 except Exception as e:
     print("Exception opening {} file: {}".format(result_file, str(e)))
